@@ -1,0 +1,92 @@
+//@version=4
+study("ourpineproject", overlay=true)
+//MADE AND TESTED BY HOORMAZD AND BURCAK
+btol(b) =>
+    b ? 1 : 0
+btos(b) =>
+    b ? -1 : 0
+candleup = highest(close,2)
+candledn = lowest(close,2)
+candletrend = sma(close,3)
+typ = (3*close+low+open+high)/6
+var1 = (close>close[1] and close>close[2])
+var2 = (var1[1] and close<=close[1] and close>close[2])
+var3 = (var2[1] and close>=close[1] and close<=close[2])
+var4 = (var3[1] and close<=close[1] and close>=close[2])
+var5 = (var4[1] and close>=close[1] and close<=close[2])
+var6 = (var5[1] and close<=close[1] and close>=close[2])
+var7 = (var6[1] and close>=close[1] and close<=close[2])
+var8 = (var7[1] and close<=close[1] and close>=close[2])
+var9 = (var8[1] and close>=close[1] and close<=close[2])
+vara = (var9[1] and close<=close[1] and close>=close[2])
+varb = (vara[1] and close>=close[1] and close<=close[2])
+varc = (varb[1] and close<=close[1] and close>=close[2])
+vard = (close<close[1] and close<close[2])
+vare = (vard[1] and close>=close[1] and close<=close[2])
+varf = (vare[1] and close<=close[1] and close>=close[2])
+var10 = (varf[1] and close>=close[1] and close<=close[2])
+var11 = (var10[1] and close<=close[1] and close>=close[2])
+var12 = (var11[1] and close>=close[1] and close<=close[2])
+var13 = (var12[1] and close<=close[1] and close>=close[2])
+var14 = (var13[1] and close>=close[1] and close<=close[2])
+var15 = (var14[1] and close<=close[1] and close>=close[2])
+var16 = (var15[1] and close>=close[1] and close<=close[2])
+var17 = (var16[1] and close<=close[1] and close>=close[2])
+var18 = (var17[1] and close>=close[1] and close<=close[2])
+var19 = ((vard or vare or varf or var10 or var11 or var12 or var13 or var14 or var15 or var16 or var17 or var18)[1] and var1)
+var1a = ((var1 or var2 or var3 or var4 or var5 or var6 or var7 or var8 or var9 or vara or varb or varc)[1] and vard)
+hodl = var1 or var2 or var3 or var4 or var5 or var6 or var7 or var8 or var9 or vara or varb or varc
+exitsignal = iff(hodl,candledn,na)
+exitomo = exitsignal
+exittoda = exitsignal[1]
+justwatch = vard or vare or varf or var10 or var11 or var12 or var13 or var14 or var15 or var16 or var17 or var18
+longentry = iff(justwatch,candleup,na)
+entrytomo = longentry
+entrytoda = entrytomo[1]
+buysmall = var19
+exitred = var1a
+rapidoverfall = (close-sma(close,34))/sma(close,34)*100<-14
+morningstar = (20*typ+19*typ[1]+18*typ[2]+17*typ[3]+16*typ[4]+15*typ[5]+14*typ[6]+13*typ[7]+12*typ[8]+11*typ[9]+10*typ[10]+9*typ[11]+8*typ[12]+7*typ[13]+6*typ[14]+5*typ[15]+4*typ[16]+3*typ[17]+2*typ[18]+typ[20])/211
+morningglory = sma(close,26)
+plot(morningstar,color=color.lime, linewidth =2)
+plot(morningglory,color=color.red, linewidth =2)
+wait = iff(candletrend>morningstar,morningstar,candletrend)
+iff(wait>wait[1],wait,na)
+iff(morningstar>morningstar[1],morningstar,na)
+iff(morningstar<morningstar[1],morningstar,na)
+iff(morningglory>morningglory[1],morningglory,na)
+iff(morningglory<morningglory[1],morningglory,na)
+plotcandle(exittoda,exittoda, exittoda, exittoda, color=barstate.islast and (hodl or hodl[1])?color.yellow:na )
+plotcandle(entrytoda,entrytoda, entrytoda, entrytoda, color=barstate.islast and (justwatch or justwatch[1])?color.purple:na )
+plotcandle(low,high, low,high, color=close>=open?color.lime:na )
+plotcandle(low,high, low,high, color=close<open?color.maroon:na )
+plotcandle(open,close, open,close, color=color.teal)
+plotcandle(open,close, open,close, color=close>=open?color.yellow:na)
+plotcandle(open,close, open,close, color=hodl?color.orange:na)
+plotcandle(open,close, open,close, color=justwatch?color.aqua:na)
+co = (close-open)
+plotcandle(open,close-co/2, open,close-co/2, color=rapidoverfall?color.white:na)
+plotcandle(open,open+co/3, open,open+co/3, color=buysmall?color.green:na)
+plotcandle(open,open+co/3, open,open+co/3, color=exitred?color.fuchsia:na)
+plotshape(buysmall ? morningstar : na, title="Buy خرید", text="Buy خرید", location= location.belowbar, style=shape.labelup, size=size.tiny, color=color.purple, textcolor=color.white, transp=0)
+plotshape(exitred ? morningstar : na, title="Sell فروش", text="Sell فروش", location= location.abovebar, style=shape.labeldown, size=size.tiny, color=color.blue, textcolor=color.white, transp=0)
+long = buysmall
+short = exitred
+backtest = btol(long) + btos(short)
+plot(backtest, title="backtest", color=color.white)
+lookback = input(title="Lookback Periods", type=input.integer, defval=30)
+atrMult = input(title="ATR Multiplier", type=input.float, defval=1)
+atr=atr(lookback)*atrMult
+sma=sma(close, lookback)
+RangeLo=sma-atr
+RangeHi=sma+atr
+atrShort=close[1] > RangeLo and close < RangeLo
+atrLong=close[1] < RangeHi and close > RangeHi
+p0 =plot(close, title="Close", color=#26A69A, linewidth=0, style=plot.style_stepline)
+p1 =plot(RangeHi, title="High", color=color.blue, linewidth=0, style=plot.style_stepline)
+p2 =plot(RangeLo, title="Low", color=color.purple, linewidth=0, style=plot.style_stepline)
+fill(p1, p0, color=color.blue)
+fill(p0, p2, color=color.purple)
+plotshape(atrShort,  title= "Short", location=location.belowbar, color=color.blue, style=shape.diamond, size=size.tiny)
+plotshape(atrLong, title= "Long", location=location.abovebar, color=color.purple, style=shape.diamond, size=size.tiny)
+
